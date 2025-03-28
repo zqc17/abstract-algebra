@@ -36,18 +36,14 @@ lemma gcd_distrib_lcm₁ {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠
     Nat.factorization_lcm, Nat.factorization_lcm, Nat.factorization_gcd,
     Nat.factorization_gcd]
   · exact le_inf_sup
-  all_goals try apply Nat.lcm_ne_zero
-  all_goals try apply Nat.gcd_ne_zero_right
-  all_goals first | assumption | exact Nat.lcm_ne_zero hy hz
+  all_goals apply_rules [Nat.gcd_ne_zero_left, Nat.lcm_ne_zero]
 
 lemma gcd_distrib_lcm₂ {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
     x.gcd (y.lcm z) ∣ (x.gcd y).lcm (x.gcd z) := by
   rw [← Nat.factorization_le_iff_dvd, Nat.factorization_gcd,
     Nat.factorization_lcm, Nat.factorization_lcm, Nat.factorization_gcd,
     Nat.factorization_gcd, ← inf_sup_left]
-  all_goals try apply Nat.lcm_ne_zero
-  all_goals try apply Nat.gcd_ne_zero_right
-  all_goals first | assumption | exact Nat.lcm_ne_zero hy hz
+  all_goals apply_rules [Nat.gcd_ne_zero_left, Nat.lcm_ne_zero]
 
 lemma gcd_distrib_lcm {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
     x.gcd (y.lcm z) = (x.gcd y).lcm (x.gcd z) :=
