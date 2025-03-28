@@ -21,12 +21,13 @@ lemma vp_gcd {p a b : ℕ} (hpp : p.Prime) (ha : 0 < a) (hb : 0 < b) :
     padicValNat p (a.gcd b) = min (padicValNat p a) (padicValNat p b) := by
   simp [← Nat.factorization_def _ hpp, Nat.factorization_gcd ha.ne' hb.ne']
 
-lemma gcd_distrib_lcm {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
-    (x.lcm y).gcd (x.lcm z) ∣ x.lcm (y.gcd z) := by
-  rw [←Nat.factorization_le_iff_dvd, Nat.factorization_gcd]
-  repeat rw [Nat.factorization_lcm]
+lemma lcm_distrib_gcd {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+    x.lcm (y.gcd z) = (x.lcm y).gcd (x.lcm z) := by
+  apply Nat.eq_of_factorization_eq _ _
+  apply congr_fun
   rw [Nat.factorization_gcd]
-  simp [le_sup_inf]
+  repeat rw [Nat.factorization_lcm]
+  rw [Nat.factorization_gcd, sup_inf_left]
   all_goals try assumption
   all_goals try apply Nat.lcm_ne_zero
   all_goals try assumption
