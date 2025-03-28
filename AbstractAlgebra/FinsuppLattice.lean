@@ -33,3 +33,54 @@ lemma lcm_distrib_gcd {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0)
   all_goals try assumption
   all_goals try apply Nat.gcd_ne_zero_left hy
   exact Nat.gcd_ne_zero_left <| Nat.lcm_ne_zero hx hy
+
+lemma gcd_distrib_lcm₁ {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+    (x.gcd y).lcm (x.gcd z) ∣ x.gcd (y.lcm z) := by
+  rw [← Nat.factorization_le_iff_dvd, Nat.factorization_gcd,
+    Nat.factorization_lcm, Nat.factorization_lcm, Nat.factorization_gcd,
+    Nat.factorization_gcd]
+  · exact le_inf_sup
+  all_goals try apply Nat.lcm_ne_zero
+  all_goals try apply Nat.gcd_ne_zero_right
+  all_goals first | assumption | exact Nat.lcm_ne_zero hy hz
+
+lemma gcd_distrib_lcm₂ {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+    x.gcd (y.lcm z) ∣ (x.gcd y).lcm (x.gcd z) := by
+  rw [← Nat.factorization_le_iff_dvd, Nat.factorization_gcd,
+    Nat.factorization_lcm, Nat.factorization_lcm, Nat.factorization_gcd,
+    Nat.factorization_gcd, ← inf_sup_left]
+  all_goals try apply Nat.lcm_ne_zero
+  all_goals try apply Nat.gcd_ne_zero_right
+  all_goals first | assumption | exact Nat.lcm_ne_zero hy hz
+
+lemma gcd_distrib_lcm {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+    x.gcd (y.lcm z) = (x.gcd y).lcm (x.gcd z) :=
+  (Nat.dvd_antisymm
+    (gcd_distrib_lcm₁ hx hy hz) (gcd_distrib_lcm₂ hx hy hz)).symm
+
+lemma gcd_distrib_lcm_aux₁ {y z : ℤ} :
+    (0 : ℤ).gcd (y.lcm z) = ((0 : ℤ).gcd y).lcm ((0 : ℤ).gcd z) := by
+  simp only [Int.gcd_zero_left, Int.natAbs_ofNat]; rfl
+
+lemma gcd_distrib_lcm_aux₂ {x z : ℤ} :
+    x.gcd ((0 : ℤ).lcm z) = (x.gcd (0 : ℤ)).lcm (x.gcd z) := by
+  simp only [Int.lcm_zero_left, CharP.cast_eq_zero, Int.gcd_zero_right]
+  exact Nat.dvd_antisymm (Nat.dvd_lcm_left x.natAbs (x.gcd z))
+    <| Nat.lcm_dvd_iff.2 ⟨Nat.dvd_refl x.natAbs, Nat.gcd_dvd_left x.natAbs z.natAbs⟩
+
+lemma gcd_distrib_lcm_aux₃ {x y : ℤ} :
+    x.gcd (y.lcm (0 : ℤ)) = (x.gcd y).lcm (x.gcd (0 : ℤ)) := by
+  simp only [Int.lcm_zero_right, CharP.cast_eq_zero, Int.gcd_zero_right]
+  exact Nat.dvd_antisymm (Nat.dvd_lcm_right (x.gcd y) x.natAbs)
+    <| Nat.lcm_dvd_iff.2 ⟨Nat.gcd_dvd_left x.natAbs y.natAbs, Nat.dvd_refl x.natAbs⟩
+
+lemma gcd_distrib_lcm' {x y z : ℤ} :
+    x.gcd (y.lcm z) = (x.gcd y).lcm (x.gcd z) := by
+  by_cases hx : x = 0
+  · rw [hx, gcd_distrib_lcm_aux₁]
+  · by_cases hy : y = 0
+    · rw [hy, gcd_distrib_lcm_aux₂]
+    · by_cases hz : z = 0
+      · rw [hz, gcd_distrib_lcm_aux₃]
+      · exact gcd_distrib_lcm (Int.natAbs_ne_zero.mpr hx)
+          (Int.natAbs_ne_zero.mpr hy) (Int.natAbs_ne_zero.mpr hz)
