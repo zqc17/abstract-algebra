@@ -28,11 +28,7 @@ lemma lcm_distrib_gcd {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0)
   rw [Nat.factorization_gcd]
   repeat rw [Nat.factorization_lcm]
   rw [Nat.factorization_gcd, sup_inf_left]
-  all_goals try assumption
-  all_goals try apply Nat.lcm_ne_zero
-  all_goals try assumption
-  all_goals try apply Nat.gcd_ne_zero_left hy
-  exact Nat.gcd_ne_zero_left <| Nat.lcm_ne_zero hx hy
+  all_goals apply_rules [Nat.gcd_ne_zero_left, Nat.lcm_ne_zero]
 
 lemma gcd_distrib_lcm₁ {x y z : ℕ} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
     (x.gcd y).lcm (x.gcd z) ∣ x.gcd (y.lcm z) := by
